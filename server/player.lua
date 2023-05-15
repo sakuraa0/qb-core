@@ -9,7 +9,9 @@ function QBCore.Player.Login(source, citizenid, newData)
     if source and source ~= '' then
         if citizenid then
             local license = QBCore.Functions.GetIdentifier(source, 'license')
+            local isOnline = QBCore.Functions.GetPlayerByCitizenId(citizenid)
             local PlayerData = MySQL.prepare.await('SELECT * FROM players where citizenid = ?', { citizenid })
+            if isOnline then exports['qb-core']:ExploitBan(source, 'You Have Been Banned For Exploitation') return end
             if PlayerData and license == PlayerData.license then
                 PlayerData.money = json.decode(PlayerData.money)
                 PlayerData.job = json.decode(PlayerData.job)
@@ -35,6 +37,7 @@ function QBCore.Player.Login(source, citizenid, newData)
         return false
     end
 end
+
 
 function QBCore.Player.GetOfflinePlayer(citizenid)
     if citizenid then
