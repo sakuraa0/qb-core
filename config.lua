@@ -1,5 +1,6 @@
 QBConfig = {}
 
+
 QBConfig.MaxPlayers = GetConvarInt('sv_maxclients', 10) -- Gets max players from config file, default 48
 QBConfig.DefaultSpawn = vector4(-1035.71, -2731.87, 12.86, 0.0)
 QBConfig.UpdateInterval = 5 -- how often to update player data in minutes
@@ -17,6 +18,8 @@ QBConfig.Player.ThirstRate = 3.8 -- Rate at which thirst goes down.
 QBConfig.Player.Bloodtypes = {
     "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-",
 }
+
+QBConfig.Inventory = 'qb-inventory'
 
 QBConfig.Server = {} -- General server config
 QBConfig.Server.Closed = false -- Set server closed (no one can join except people with ace permission 'qbadmin.join')

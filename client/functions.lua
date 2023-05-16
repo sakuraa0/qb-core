@@ -13,7 +13,11 @@ function QBCore.Functions.GetCoords(entity)
 end
 
 function QBCore.Functions.HasItem(items, amount)
-    return exports['qb-inventory']:HasItem(items, amount)
+    if QBConfig.Inventory == 'qb-inventory' then
+        return exports['qb-inventory']:HasItem(items, amount)
+    elseif QBConfig.Inventory == 'qs-inventory' then
+        return exports['qs-inventory']:HasItem(items, amount)
+    end
 end
 
 -- Utility
