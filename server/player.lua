@@ -351,8 +351,8 @@ function QBCore.Player.CreatePlayer(PlayerData, Offline)
 		if amount < 0 then return end
 		if moneytype == 'cash' then
 			if self.Functions.GetItemByName('cash') ~= nil then
-				local pgggagamtestte = self.Functions.GetItemByName('cash').amount
-				self.Functions.RemoveItem('cash', pgggagamtestte)
+				local cash = self.Functions.GetItemByName('cash').amount
+				self.Functions.RemoveItem('cash', cash)
 				self.Functions.AddItem('cash', amount)
 				self.Functions.UpdatePlayerData()
 				return true
