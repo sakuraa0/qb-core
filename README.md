@@ -1,5 +1,6 @@
 # qb-core
- qb-core version 1.2.6 cash as item
+version 1.2.6
 
+Adding cash as item in qbcore/server/player.lua 
 
-cash added in shared/items.lua
+Adding compatibility to qs-inventory qbcore/config Change QBConfig.Inventory = 'qb-inventory' or 'qs-inventory'
