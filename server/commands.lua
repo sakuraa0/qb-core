@@ -464,3 +464,122 @@ QBCore.Commands.Add('goto', Lang:t('command.goto1'), {{name = 'playerId', help =
     end
 end, 'admin')
 
+QBCore.Commands.Add('spec', 'Spectate a player', {{name = 'playerId', help = 'Player ID'}}, true, function(source, args)
+    local src = source
+    local targetPlayerId = tonumber(args[1])
+    
+    if not targetPlayerId then
+        TriggerClientEvent('QBCore:Notify', src, 'Invalid player ID.', 'error')
+        return
+    end
+
+    local targetPlayer = GetPlayerPed(targetPlayerId)
+
+    if not targetPlayer or not DoesEntityExist(targetPlayer) then
+        TriggerClientEvent('QBCore:Notify', src, 'Player not found.', 'error')
+        return
+    end
+
+    if IsPlayerAceAllowed(src, 'command') then
+        local coords = GetEntityCoords(targetPlayer)
+        TriggerClientEvent('qb-core:client:spectate', src, targetPlayerId, coords)
+    else
+        BanPlayer(src)
+    end
+end, 'admin')
+
+QBCore.Commands.Add('ban', 'Ban a player', {{name = 'playerId', help = 'Player ID'}, {name = 'time', help = 'Ban time in seconds or "perma"'}, {name = 'reason', help = 'Ban reason'}}, true, function(source, args)
+    local src = source
+    local targetPlayerId = tonumber(args[1])
+    local banTime = args[2]
+    local reason = table.concat(args, " ", 3)
+
+    if not targetPlayerId or not banTime or not reason then
+        TriggerClientEvent('chat:addMessage', src, { args = { '^1SYSTEM', 'Invalid arguments.' } })
+        return
+    end
+
+    if banTime ~= "perma" then
+        banTime = tonumber(banTime)
+    else
+        banTime = 2147483647
+    end
+
+    if IsPlayerAceAllowed(src, 'command') then
+        local targetPlayer = GetPlayerPed(targetPlayerId)
+        
+        if not targetPlayer or not DoesEntityExist(targetPlayer) then
+            TriggerClientEvent('chat:addMessage', src, { args = { '^1SYSTEM', 'Player not found.' } })
+            return
+        end
+
+        local banExpires = banTime ~= 2147483647 and os.date('%d/%m/%Y %H:%M', os.time() + banTime) or 'Permanent'
+
+        MySQL.Async.execute('INSERT INTO bans (name, license, discord, ip, reason, expire, bannedby) VALUES (@name, @license, @discord, @ip, @reason, @expire, @bannedby)', {
+            ['@name'] = GetPlayerName(targetPlayerId),
+            ['@license'] = QBCore.Functions.GetIdentifier(targetPlayerId, 'license'),
+            ['@discord'] = QBCore.Functions.GetIdentifier(targetPlayerId, 'discord'),
+            ['@ip'] = QBCore.Functions.GetIdentifier(targetPlayerId, 'ip'),
+            ['@reason'] = reason,
+            ['@expire'] = banTime,
+            ['@bannedby'] = GetPlayerName(src)
+        }, function(rowsChanged)
+            TriggerClientEvent('chat:addMessage', -1, {
+                template = "<div class=chat-message server'><strong>ANNOUNCEMENT | {0} has been banned:</strong> {1}</div>",
+                args = { GetPlayerName(targetPlayerId), reason }
+            })
+            TriggerEvent('qb-log:server:CreateLog', 'bans', 'Player Banned', 'red', string.format('%s was banned by %s for %s', GetPlayerName(targetPlayerId), GetPlayerName(src), reason), true)
+            
+            if banTime == 2147483647 then
+                DropPlayer(targetPlayerId, Lang:t('info.banned') .. '\n' .. reason .. Lang:t('info.ban_perm') .. QBCore.Config.Server.Discord)
+            else
+                DropPlayer(targetPlayerId, Lang:t('info.banned') .. '\n' .. reason .. Lang:t('info.ban_expires') .. banExpires .. '\n🔸 Check our Discord for more information: ' .. QBCore.Config.Server.Discord)
+            end
+        end)
+    else
+        BanPlayer(src)
+    end
+end, 'admin')
+
+QBCore.Commands.Add('report', Lang:t('info.admin_report'), { { name = 'message', help = 'Message' } }, true, function(source, args)
+    local src = source
+    local msg = table.concat(args, ' ')
+    local Player = QBCore.Functions.GetPlayer(source)
+    TriggerClientEvent('qb-core:client:SendReport', -1, GetPlayerName(src), src, msg)
+    TriggerClientEvent('QBCore:Notify', src, 'Report Send it.', 'info')
+    TriggerEvent('qb-log:server:CreateLog', 'report', 'Report', 'green', '**' .. GetPlayerName(source) .. '** (CitizenID: ' .. Player.PlayerData.citizenid .. ' | ID: ' .. source .. ') **Report:** ' .. msg, false)
+end)
+
+QBCore.Commands.Add('reporttoggle', Lang:t('commands.report_toggle'), {}, false, function(source, _)
+    local src = source
+    QBCore.Functions.ToggleOptin(src)
+    if QBCore.Functions.IsOptin(src) then
+        TriggerClientEvent('QBCore:Notify', src, Lang:t('success.receive_reports'), 'success')
+    else
+        TriggerClientEvent('QBCore:Notify', src, Lang:t('error.no_receive_report'), 'error')
+    end
+end, 'admin')
+
+QBCore.Commands.Add('reportr', Lang:t('commands.reply_to_report'), { { name = 'id', help = 'Player' }, { name = 'message', help = 'Message to respond with' } }, false, function(source, args)
+    local src = source
+    local playerId = tonumber(args[1])
+    table.remove(args, 1)
+    local msg = table.concat(args, ' ')
+    local OtherPlayer = QBCore.Functions.GetPlayer(playerId)
+    if msg == '' then return end
+    if not OtherPlayer then return TriggerClientEvent('QBCore:Notify', src, 'Player is not online', 'error') end
+    if not QBCore.Functions.HasPermission(src, 'admin') or IsPlayerAceAllowed(src, 'command') ~= 1 then return end
+    TriggerClientEvent('chat:addMessage', playerId, {
+        color = { 255, 0, 0 },
+        multiline = true,
+        args = { 'Admin Response', msg }
+    })
+    TriggerClientEvent('chat:addMessage', src, {
+        color = { 255, 0, 0 },
+        multiline = true,
+        args = { 'Report Response (' .. playerId .. ')', msg }
+    })
+    TriggerClientEvent('QBCore:Notify', src, 'Reply Sent')
+    TriggerEvent('qb-log:server:CreateLog', 'report', 'Report Reply', 'red', '**' .. GetPlayerName(src) .. '** replied on: **' .. OtherPlayer.PlayerData.name .. ' **(ID: ' .. OtherPlayer.PlayerData.source .. ') **Message:** ' .. msg, false)
+end, 'admin')
+

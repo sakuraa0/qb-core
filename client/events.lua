@@ -360,3 +360,31 @@ RegisterNetEvent('qb-core:client:SaveCar', function()
         QBCore.Functions.Notify(Lang:t('error.no_vehicle'), 'error')
     end
 end)
+
+RegisterNetEvent('qb-core:client:spectate', function(targetPed)
+    local myPed = PlayerPedId()
+    local targetplayer = GetPlayerFromServerId(targetPed)
+    local target = GetPlayerPed(targetplayer)
+    if not isSpectating then
+        isSpectating = true
+        SetEntityVisible(myPed, false)                  -- Set invisible
+        SetEntityCollision(myPed, false, false)         -- Set collision
+        SetEntityInvincible(myPed, true)                -- Set invincible
+        NetworkSetEntityInvisibleToNetwork(myPed, true) -- Set invisibility
+        lastSpectateCoord = GetEntityCoords(myPed)      -- save my last coords
+        NetworkSetInSpectatorMode(true, target)         -- Enter Spectate Mode
+    else
+        isSpectating = false
+        NetworkSetInSpectatorMode(false, target)         -- Remove From Spectate Mode
+        NetworkSetEntityInvisibleToNetwork(myPed, false) -- Set Visible
+        SetEntityCollision(myPed, true, true)            -- Set collision
+        SetEntityCoords(myPed, lastSpectateCoord)        -- Return Me To My Coords
+        SetEntityVisible(myPed, true)                    -- Remove invisible
+        SetEntityInvincible(myPed, false)                -- Remove godmode
+        lastSpectateCoord = nil                          -- Reset Last Saved Coords
+    end
+end)
+
+RegisterNetEvent('qb-core:client:SendReport', function(name, src, msg)
+    TriggerServerEvent('qb-core:server:SendReport', name, src, msg)
+end)

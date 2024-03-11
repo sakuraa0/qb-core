@@ -300,3 +300,16 @@ RegisterNetEvent('qb-admin:server:bring', function(player)
         BanPlayer(src)
     end
 end)
+
+RegisterNetEvent('qb-core:server:SendReport', function(name, targetSrc, msg)
+    local src = source
+    if QBCore.Functions.HasPermission(src, 'admin') or IsPlayerAceAllowed(src, 'command') then
+        if QBCore.Functions.IsOptin(src) then
+            TriggerClientEvent('chat:addMessage', src, {
+                color = { 255, 0, 0 },
+                multiline = true,
+                args = { Lang:t('info.admin_report') .. name .. ' (' .. targetSrc .. ')', msg }
+            })
+        end
+    end
+end)
