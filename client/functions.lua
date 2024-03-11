@@ -81,20 +81,34 @@ RegisterNUICallback('getNotifyConfig', function(_, cb)
 end)
 
 function QBCore.Functions.Notify(text, texttype, length)
-    if textype == "primary" then textype = "info" end
-    if type(text) == "table" then
-        local ttext = text.text or 'Placeholder'
-        local caption = text.caption or 'Placeholder'
-        local texttype = texttype or 'info'
-
-        exports['okokNotify']:Alert(caption, ttext, 5000, texttype)
-    else
-        local ttext = text.text or 'Placeholder'
-        local texttype = texttype or 'info'
-
-        exports['okokNotify']:Alert(text, '', 5000, texttype)
+    if QBConfig.Notifyy == "okok" then
+        if texttype == "primary" then texttype = "info" end
+        if type(text) == "table" then
+            local ttext = text.text or 'Placeholder'
+            local caption = text.caption or 'Placeholder'
+            local texttype = texttype or 'info'
+            exports['okokNotify']:Alert(caption, ttext, 5000, texttype)
+        else
+            local ttext = text.text or 'Placeholder'
+            local texttype = texttype or 'info'
+            exports['okokNotify']:Alert(ttext, '', 5000, texttype)
+        end
+    elseif QBConfig.Notifyy == "qb" then
+        local message = {
+            action = 'notify',
+            type = texttype or 'primary',
+            length = length or 5000,
+        }
+        if type(text) == 'table' then
+            message.text = text.text or 'Placeholder'
+            message.caption = text.caption or 'Placeholder'
+        else
+            message.text = text
+        end
+        SendNUIMessage(message)
     end
 end
+
 
 function QBCore.Debug(resource, obj, depth)
     TriggerServerEvent('QBCore:DebugSomething', resource, obj, depth)

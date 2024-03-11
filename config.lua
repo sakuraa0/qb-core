@@ -34,6 +34,9 @@ QBConfig.Commands.OOCColor = { 255, 151, 133 }          -- RGB color code for th
 
 QBConfig.Notify = {}
 
+QBConfig.TextMenu = "okok" -- for now you can use "okok", or "qb"
+QBConfig.Notifyy = "okok"  -- for now you can use "okok", or "qb"
+
 QBConfig.Notify.NotificationStyling = {
     group = false,      -- Allow notifications to stack with a badge instead of repeating
     position = 'right', -- top-left | top-right | bottom-left | bottom-right | top | bottom | left | right | center

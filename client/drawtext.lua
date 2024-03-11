@@ -1,12 +1,29 @@
 local function hideText()
-    exports['okokTextUI']:Close()
+    if QBConfig.TextMenu == "okok" then
+        exports['okokTextUI']:Close()
+    elseif QBConfig.TextMenu == "qb" then
+        SendNUIMessage({
+            action = 'HIDE_TEXT',
+        })
+    end
 end
 
 local function drawText(text, position)
-    if type(position) ~= 'string' then position = 'left' end
-    local color = 'darkblue' -- textui color
-    local playSound = true -- playsound on/off
-    exports['okokTextUI']:Open(text, color, position, playSound)
+    if QBConfig.TextMenu == "okok" then
+        if type(position) ~= 'string' then position = 'left' end
+        local color = 'darkblue' -- textui color
+        local playSound = true -- playsound on/off
+        exports['okokTextUI']:Open(text, color, position, playSound)
+    elseif QBConfig.TextMenu == "qb" then 
+        if type(position) ~= 'string' then position = 'left' end
+        SendNUIMessage({
+            action = 'DRAW_TEXT',
+            data = {
+                text = text,
+                position = position
+            }
+        })
+    end
 end
 
 local function changeText(text, position)
