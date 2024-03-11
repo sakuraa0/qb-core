@@ -1,3 +1,5 @@
+THIS QB-CORE IS USING OKOK-TEXTUI AND OKOKNOTIFY MODIFICATIONS, SO YOU WILL NEED IT OR CHANGE THE FUNCTIONS!
+
 # qb-core
 
 ### [Official QBCore Documentation](https://docs.qbcore.org)
