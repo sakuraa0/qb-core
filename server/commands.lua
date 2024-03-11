@@ -437,3 +437,30 @@ QBCore.Commands.Add('bringback', Lang:t('command.bringback'), {{name = 'playerId
         TriggerClientEvent('QBCore:Notify', src, Lang:t('command.bringback_noloc'), 'error')
     end
 end, 'admin')
+
+QBCore.Commands.Add('goto', Lang:t('command.goto1'), {{name = 'playerId', help = 'Player ID'}}, true, function(source, args)
+    local src = source
+    local targetPlayerId = tonumber(args[1])
+
+    if not targetPlayerId then
+        TriggerClientEvent('QBCore:Notify', src, Lang:t('command.goto_invalid'), 'error')
+        return
+    end
+
+    local targetPlayer = GetPlayerPed(targetPlayerId)
+
+    if not targetPlayer or not DoesEntityExist(targetPlayer) then
+        TriggerClientEvent('QBCore:Notify', src, Lang:t('command.goto_notfound'), 'error')
+        return
+    end
+
+    if IsPlayerAceAllowed(src, 'command') then
+        local adminCoords = GetEntityCoords(targetPlayer)
+        local adminPed = GetPlayerPed(src)
+        SetEntityCoords(adminPed, adminCoords)
+        TriggerClientEvent('QBCore:Notify', src, Lang:t('command.goto_success'), 'success')
+    else
+        BanPlayer(src)
+    end
+end, 'admin')
+
