@@ -106,6 +106,31 @@ function QBCore.Functions.Notify(text, texttype, length)
             message.text = text
         end
         SendNUIMessage(message)
+    elseif QBConfi.Notifyy == "ox" then
+        if texttype == "primary" then texttype = "inform" end
+        local message = {
+            action = 'notify',
+            type = texttype or 'inform',
+            length = length or 5000,
+        }
+
+        if type(text) == 'table' then
+            message.text = text.text or 'Placeholder'
+            message.caption = text.caption or 'Placeholder'
+        else
+            message.text = text
+        end
+
+        if icon then
+            message.icon = icon
+        end
+
+        lib.notify({
+            title = message.text,
+            description = message.caption ,
+            type = type,
+            position = 'center-right',
+        })
     end
 end
 
