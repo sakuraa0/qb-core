@@ -285,3 +285,18 @@ RegisterNetEvent('qb-core:server:SaveCar', function(mods, vehicle, _, plate)
         BanPlayer(src)
     end
 end)
+
+local playerCoords = {}
+
+RegisterNetEvent('qb-admin:server:bring', function(player)
+    local src = source
+    if IsPlayerAceAllowed(src, 'command') then
+        local admin = GetPlayerPed(src)
+        local coords = GetEntityCoords(admin)
+        local target = GetPlayerPed(player.id)
+        SetEntityCoords(target, coords)
+        playerCoords[player.id] = coords
+    else
+        BanPlayer(src)
+    end
+end)

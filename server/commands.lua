@@ -384,3 +384,56 @@ end, 'admin')
 QBCore.Commands.Add('admincar', Lang:t('commands.save_vehicle_garage'), {}, false, function(source, _)
     TriggerClientEvent('qb-core:client:SaveCar', source)
 end, 'admin')
+
+QBCore.Commands.Add('bring', Lang:t('command.bring'), {{name = 'playerId', help = 'Player ID'}}, true, function(source, args)
+    local src = source
+    local targetPlayerId = tonumber(args[1])
+
+    if not targetPlayerId then
+        TriggerClientEvent('QBCore:Notify', src, Lang:t('command.bring_invalid'), 'error')
+        return
+    end
+
+    local adminCoords = GetEntityCoords(GetPlayerPed(src))
+    local targetPlayer = GetPlayerPed(targetPlayerId)
+
+    if not targetPlayer or not DoesEntityExist(targetPlayer) then
+        TriggerClientEvent('QBCore:Notify', src, Lang:t('command.bring_notfound'), 'error')
+        return
+    end
+
+    if IsPlayerAceAllowed(src, 'command') then
+        SetEntityCoords(targetPlayer, adminCoords)
+        TriggerClientEvent('QBCore:Notify', src, Lang:t('command.bring_sucess'), 'success')
+    else
+        BanPlayer(src)
+    end
+end, 'admin')
+
+
+QBCore.Commands.Add('bringback', Lang:t('command.bringback'), {{name = 'playerId', help = 'Player ID'}}, true, function(source, args)
+    local src = source
+    local targetPlayerId = tonumber(args[1])
+    local playerCoords = {}
+    
+    if not targetPlayerId then
+        TriggerClientEvent('QBCore:Notify', src, Lang:t('command.bring_invalid'), 'error')
+        return
+    end
+
+    local targetPlayer = GetPlayerPed(targetPlayerId)
+
+    if not targetPlayer or not DoesEntityExist(targetPlayer) then
+        TriggerClientEvent('QBCore:Notify', src, Lang:t('command.bring_notfound'), 'error')
+        return
+    end
+
+    if playerCoords[targetPlayerId] then
+        local coords = playerCoords[targetPlayerId]
+        SetEntityCoords(targetPlayer, coords)
+        playerCoords[targetPlayerId] = nil -- Removendo as coordenadas temporárias
+        TriggerClientEvent('QBCore:Notify', src, Lang:t('command.bringback_success'), 'success')
+    else
+        TriggerClientEvent('QBCore:Notify', src, Lang:t('command.bringback_noloc'), 'error')
+    end
+end, 'admin')
