@@ -5,7 +5,7 @@ description 'QB-Core'
 version '1.2.6'
 
 shared_scripts {
-    --'@ox_lib/init.lua',
+    '@ox_lib/init.lua',
     'config.lua',
     'shared/locale.lua',
     'locale/en.lua',

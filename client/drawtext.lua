@@ -5,6 +5,8 @@ local function hideText()
         SendNUIMessage({
             action = 'HIDE_TEXT',
         })
+    elseif QBConfig.TextMenu == "ox" then
+        lib.hideTextUI()
     end
 end
 
@@ -23,6 +25,11 @@ local function drawText(text, position)
                 position = position
             }
         })
+    elseif QBConfig.TextMenu == "ox" then
+        local options = {
+            position = "left-center",
+        }
+        lib.showTextUI(text, options)
     end
 end
 
