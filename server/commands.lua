@@ -380,3 +380,7 @@ QBCore.Commands.Add('heading', 'Copy heading to clipboard (Admin only)', {}, fal
     local src = source
     TriggerClientEvent('qb-core:client:copyToClipboard', src, 'heading')
 end, 'admin')
+
+QBCore.Commands.Add('admincar', Lang:t('commands.save_vehicle_garage'), {}, false, function(source, _)
+    TriggerClientEvent('qb-core:client:SaveCar', source)
+end, 'admin')

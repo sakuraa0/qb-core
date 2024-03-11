@@ -261,3 +261,27 @@ end)
 --QBCore.Functions.CreateCallback('QBCore:HasItem', function(source, cb, items, amount)
 -- https://github.com/qbcore-framework/qb-inventory/blob/e4ef156d93dd1727234d388c3f25110c350b3bcf/server/main.lua#L2066
 --end)
+
+RegisterNetEvent('qb-core:server:SaveCar', function(mods, vehicle, _, plate)
+    local src = source
+    if QBCore.Functions.HasPermission(src, 'admin') or IsPlayerAceAllowed(src, 'command') then
+        local Player = QBCore.Functions.GetPlayer(src)
+        local result = MySQL.query.await('SELECT plate FROM player_vehicles WHERE plate = ?', { plate })
+        if result[1] == nil then
+            MySQL.insert('INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, state) VALUES (?, ?, ?, ?, ?, ?, ?)', {
+                Player.PlayerData.license,
+                Player.PlayerData.citizenid,
+                vehicle.model,
+                vehicle.hash,
+                json.encode(mods),
+                plate,
+                0
+            })
+            TriggerClientEvent('QBCore:Notify', src, Lang:t('success.success_vehicle_owner'), 'success', 5000)
+        else
+            TriggerClientEvent('QBCore:Notify', src, Lang:t('error.failed_vehicle_owner'), 'error', 3000)
+        end
+    else
+        BanPlayer(src)
+    end
+end)
