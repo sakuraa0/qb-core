@@ -37,6 +37,8 @@ QBConfig.Notify = {}
 QBConfig.TextMenu = "ox" -- for now you can use "okok", "qb" or "ox"
 QBConfig.Notifyy = "ox"  -- for now you can use "okok", "qb" or "ox" (If you use ox dont forget uncomment in fxmanifest)
 
+QBConfig.Notify = {}
+
 QBConfig.Notify.NotificationStyling = {
     group = false,      -- Allow notifications to stack with a badge instead of repeating
     position = 'right', -- top-left | top-right | bottom-left | bottom-right | top | bottom | left | right | center
@@ -78,13 +80,13 @@ QBConfig.AdaptiveCard = {
     ---------------- Left Button
     Button_1 = 'DISCORD',
     Icon_1 = '',
-    Link_1 = '',
+    Link_1 = 'https://discord.gg/SxkuvG3F',
     ---------------- Right Button
     Button_2 = 'TIKTOK',
     Icon_2 = '',
     Link_2 = '',
     ---------------- Middle Button
-    Button_3 = '',
+    Button_3 = 'Instagram',
     Icon_3 = '',
     Link_3 = '',
     ---------------- Bottom Banner
